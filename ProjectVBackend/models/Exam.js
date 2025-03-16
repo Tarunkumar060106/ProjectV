@@ -7,6 +7,7 @@ const ExamSchema = new mongoose.Schema({
     duration: { type: Number, required: true },
     total_marks: { type: Number, required: true },
     assigned_students: { type: [mongoose.Schema.Types.ObjectId], ref: "Student" },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     course_id: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
     subjects: { type: [mongoose.Schema.Types.ObjectId], ref: "Subject" },
     sections: { type: [mongoose.Schema.Types.ObjectId], ref: "Section" },

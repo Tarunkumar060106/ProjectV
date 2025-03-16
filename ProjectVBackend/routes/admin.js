@@ -97,8 +97,8 @@ router.get("/dashboard", authMiddleware(["admin"]), async (req, res) => {
         const totalTeachers =  users.filter(user => user.role_id.role_name === "teacher").length
         const totalAdmins =  users.filter(user => user.role_id.role_name === "admin").length
 
-        // const totalCourses = await Course.countDocuments()
-        // const totalExams = await Exam.countDocuments()
+        const totalCourses = await Course.countDocuments()
+        const totalExams = await Exam.countDocuments()
 
         const pendingUsers = await User.find({ status: "pending"}).populate("role_id", "role_name")
 
@@ -107,8 +107,8 @@ router.get("/dashboard", authMiddleware(["admin"]), async (req, res) => {
             totalStudents,
             totalTeachers,
             totalAdmins,
-            // totalCourses,
-            // totalExams,
+            totalCourses,
+            totalExams,
             pendingUsers
 
         })
