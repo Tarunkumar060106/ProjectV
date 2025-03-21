@@ -11,6 +11,7 @@ const io = socketIo(server);
 
 app.use(cors());
 app.use(express.json());
+app.use(cors({ origin: "http://localhost:5175", credentials: true}))
 
 const authRoutes = require("./routes/auth")
 const adminRoutes = require("./routes/admin")

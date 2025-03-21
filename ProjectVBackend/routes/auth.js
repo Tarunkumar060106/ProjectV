@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const User = require("../models/User");
 const Role = require("../models/Role");
+const Blacklist = require("../models/Blacklist");
 require("dotenv").config();
 
 const Router = express.Router();
@@ -127,5 +128,26 @@ Router.post("/login", [
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 });
+
+Router.post("/logout", async (req, res) => {
+    let token = req.header("Authorization")
+
+    if(!token) return res.status(400).json({ message: "Token not found" })
+
+    if (token.startsWith("Bearer ")) {
+        token = token.split(" ")[1];
+    }
+    
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        if (existingToken) return res.status(400).json({ message: "Token already blacklisted"})
+        
+        await BlackList.create({ token })
+
+        return res.json({ message: "Logged out successfully" })
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message })
+    }
+})
 
 module.exports = Router;
