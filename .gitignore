@@ -1,3 +1,2 @@
 # Ignore environment files in the backend
-ProjectVBackend/.env
-ProjectVBackend/.env.local
+/ProjectVBackend/.env

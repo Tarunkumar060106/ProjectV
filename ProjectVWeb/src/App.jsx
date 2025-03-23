@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/Admin/Dashboard";
+import LandingPage from "./pages/LandingPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -17,7 +18,7 @@ function App() {
     <Router>
       <Routes>
         {/* Redirect to Dashboard if logged in, else show Login */}
-        <Route path="/" element={token ? <Navigate to="/admin/dashboard" /> : <Login />} />
+        <Route path="/" element={<LandingPage />}/>
         
         {/* Public Routes */}
         <Route path="/register" element={<Register />} />

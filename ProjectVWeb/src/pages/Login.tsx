@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
+import { FiLoader } from "react-icons/fi";
+import logo from "../assets/logo.png";
+
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -16,58 +19,106 @@ const Login = () => {
         setError("");
         setLoading(true);
 
-        // Basic validation
         if (!email || !password) {
             setError("Both email and password are required");
             setLoading(false);
             return;
         }
 
-        // ✅ Mock Admin Credentials (Replace with API Call Later)
-        if (email === "tarunsivakumarr@gmail.com" && password === "123456") {
-            const userData = {
-                user: { email: "tarunsivakumarr@gmail.com", role: "admin" },
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDU2ZDkxMjA3ZjQ1NzhmM2QzOTc5NyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0MjU1MTE5MywiZXhwIjoxNzQyNjM3NTkzfQ.qVLQR-TuM3MUU-MCX8FlzItNT45xmXz09NetrP8MNEU",
-            };
+        // ✅ Mock Authentication (Replace with API Call)
+        // if (email === "tarunsivakumarr@gmail.com" && password === "123456") {
+        //     const userData = {
+        //         user: { email, role: "admin" },
+        //         token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        //     };
 
-            dispatch(loginSuccess(userData)); // ✅ Correct dispatch with user & token
-            navigate("/admin/dashboard");
-        } else {
-            setError("Invalid email or password");
+        //     dispatch(loginSuccess(userData));
+        //     navigate("/admin/dashboard");
+        // } else {
+        //     setError("Invalid email or password");
+        // }
+
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            })
+            
+            if(!response.ok){
+                throw new Error("Invalid email or password")
+            }
+
+            const data = await response.json();
+            
+            dispatch(loginSuccess({ user: data.user, token: data.token }));
+            if(data.user.role === "admin"){
+                navigate("/admin/dashboard")
+            }
+            else if(data.user.role === "teacher"){
+                navigate("/teacher/dashboard")
+            }
+            else {
+                navigate("/student/dashboard")
+            }
+        } catch (error) {
+            setError(error.message);
         }
         setLoading(false);
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
-            <div className="bg-white p-6 rounded shadow-md w-96">
-                <h2 className="text-2xl font-bold text-center mb-4">Admin Login</h2>
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        required
-                    />
+        <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="w-full max-w-md bg-gray-900 text-white p-8 rounded-xl shadow-lg transform transition duration-500 hover:scale-105">
+                <div className="flex justify-center mb-0">
+                    <img src={logo} alt="Logo" className="w-90 h-25 object-cover mb-2" />
+                </div>
+
+                <h2 className="text-3xl font-bold text-center">Login</h2>
+                <p className="text-sm text-gray-400 text-center mt-2">
+                    Enter your credentials to access your account
+                </p>
+
+                {error && <p className="text-red-500 text-center mt-3">{error}</p>}
+
+                <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300">Email Address</label>
+                        <input 
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full mt-1 px-4 py-2 bg-gray-700 rounded-md text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                            placeholder="you@example.com"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300">Password</label>
+                        <input 
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full mt-1 px-4 py-2 bg-gray-700 rounded-md text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                            placeholder="********"
+                        />
+                    </div>
+
                     <button 
-                        type="submit" 
-                        className={`w-full p-2 rounded ${loading ? 'bg-gray-400' : 'bg-blue-600 text-white'}`}
+                        type="submit"
+                        className="w-full flex justify-center items-center bg-blue-600 hover:bg-blue-700 transition p-2 rounded-md font-medium disabled:bg-gray-600"
                         disabled={loading}
                     >
-                        {loading ? 'Logging In...' : 'Login'}
+                        {loading ? <FiLoader className="animate-spin mr-2" /> : "Login"}
                     </button>
                 </form>
+
+                <p className="text-center text-gray-400 text-sm mt-4">
+                    Don't have an account? 
+                    <a href="/ts-register" className="text-blue-400 hover:underline ml-1">Sign up</a>
+                </p>
             </div>
         </div>
     );

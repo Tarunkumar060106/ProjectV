@@ -139,10 +139,12 @@ Router.post("/logout", async (req, res) => {
     }
     
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        jwt.verify(token, process.env.JWT_SECRET)
+        const existingToken = await Blacklist.findOne({ token })
+        
         if (existingToken) return res.status(400).json({ message: "Token already blacklisted"})
         
-        await BlackList.create({ token })
+        await Blacklist.create({ token })
 
         return res.json({ message: "Logged out successfully" })
     } catch (error) {
