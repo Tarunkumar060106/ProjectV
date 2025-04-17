@@ -9,7 +9,11 @@ const UserSchema = new mongoose.Schema({
     profile_pic: {type: String, default: "default.jpg"},
     role_id: {type: mongoose.Schema.Types.ObjectId, ref:"Role", required: true},
     auth_provider: {type: String, enum: ["email", "google", "facebook"], default: "email", required: true},
-    status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },    
+    status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" }, 
+    teacher_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", // Reference to the teacher's user document
+    },   
 }, {timestamps: true});
 
 module.exports = mongoose.model("User", UserSchema)

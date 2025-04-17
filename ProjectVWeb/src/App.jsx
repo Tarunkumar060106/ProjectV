@@ -4,6 +4,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import LandingPage from "./pages/LandingPage";
+import StudentRegistration from "./pages/Student/StudentRegistration";
+import TeacherRegistration from "./pages/Teacher/TeacherRegistration";
+import WaitingApproval from "./pages/WaitingApproval";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -21,8 +24,10 @@ function App() {
         <Route path="/" element={<LandingPage />}/>
         
         {/* Public Routes */}
-        <Route path="/register" element={<Register />} />
+        <Route path="/register-student" element={<StudentRegistration />} />
+        <Route path="/register-teacher" element={<TeacherRegistration />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/waiting-approval" element={<WaitingApproval />} />
         
         {/* Protected Route for Admin Dashboard */}
         <Route 
