@@ -114,6 +114,13 @@ const Login = () => {
                         {loading ? <FiLoader className="animate-spin mr-2" /> : "Login"}
                     </button>
                 </form>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/")}
+                        className="w-full flex justify-center items-center bg-blue-600 hover:bg-blue-700 transition p-2 rounded-md font-medium mt-2"
+                    >
+                        Return To Home
+                    </button>
 
                 <p className="text-center text-gray-400 text-sm mt-4">
                     Don't have an account? 
