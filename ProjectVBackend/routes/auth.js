@@ -146,7 +146,7 @@ Router.post(
         }
   
         // Find the teacher role
-        const role = await Role.findOne({ name: "teacher" });
+        const role = await Role.findOne({ role_name: "teacher" });
         if (!role) {
           return res.status(400).json({ message: "Teacher role not found" });
         }
@@ -239,7 +239,7 @@ Router.post("/login", [
                 role: user.role_id.role_name
             }
         });
-
+        console.log("Generated Token Payload:", jwt.decode(token));
     } catch (error) {
         console.error("❌ Error in User Login:", error);
         res.status(500).json({ message: "Server Error", error: error.message });

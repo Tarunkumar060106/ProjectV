@@ -7,6 +7,8 @@ import LandingPage from "./pages/LandingPage";
 import StudentRegistration from "./pages/Student/StudentRegistration";
 import TeacherRegistration from "./pages/Teacher/TeacherRegistration";
 import WaitingApproval from "./pages/WaitingApproval";
+import PendingUsersPage from "./pages/Admin/PendingUsersPage";
+import AllUsersPage from "./pages/Admin/AllUsersPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -37,6 +39,22 @@ function App() {
               <AdminDashboard />
             </ProtectedRoute>
           } 
+        />
+        <Route 
+          path="/admin/pending-users"
+          element={
+            <ProtectedRoute>
+              <PendingUsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/all-users"
+          element={
+            <ProtectedRoute>
+              <AllUsersPage />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </Router>

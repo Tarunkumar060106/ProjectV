@@ -48,35 +48,45 @@ router.put("/approve-user/:id", authMiddleware(["admin"]), async (req, res) => {
     }
 });
 
+router.get("/all-users", authMiddleware(["admin"]), async (req, res) => {
+    try {
+      const users = await User.find().populate("role_id", "role_name");
+      res.json({ users });
+    } catch (error) {
+      console.error("❌ Error fetching all users:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
 // 🟢 Reject a User (Student or Teacher)
 router.put("/reject-user/:id", authMiddleware(["admin"]), async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).populate("role_id", "role_name");
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        if (user.status !== "pending") {
-            return res.status(400).json({ message: `User is already ${user.status}` });
-        }
-
-        user.status = "rejected";
-        await user.save();
-
-        res.json({
-            message: `${user.role_id.role_name} rejected successfully.`,
-            user: {
-                id: user._id,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                role: user.role_id.role_name,
-                status: user.status
-            }
-        });
+      const user = await User.findById(req.params.id).populate("role_id", "role_name");
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      if (user.status !== "pending") {
+        return res.status(400).json({ message: `User is already ${user.status}` });
+      }
+  
+      // Delete the user from the database
+      await User.findByIdAndDelete(req.params.id);
+  
+      res.json({
+        message: `${user.role_id.role_name} rejected and removed successfully.`,
+        user: {
+          id: user._id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          email: user.email,
+          role: user.role_id.role_name,
+          status: "rejected", // Indicate the status for clarity
+        },
+      });
     } catch (error) {
-        console.error("❌ Error rejecting user:", error);
-        res.status(500).json({ message: "Server error", error: error.message });
+      console.error("❌ Error rejecting user:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
     }
-});
+  });
 
 // 🟢 Get All Approved Users (For Admin)
 router.get("/approved-users", authMiddleware(["admin"]), async (req, res) => {
