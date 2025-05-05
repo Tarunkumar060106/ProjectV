@@ -9,6 +9,17 @@ import TeacherRegistration from "./pages/Teacher/TeacherRegistration";
 import WaitingApproval from "./pages/WaitingApproval";
 import PendingUsersPage from "./pages/Admin/PendingUsersPage";
 import AllUsersPage from "./pages/Admin/AllUsersPage";
+import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
+import Course from "./pages/Teacher/Course"
+import Subjects from "./pages/Teacher/Subjects";
+import Exams from "./pages/Teacher/Exams";
+import AddQuestionPage from "./pages/Teacher/AddQuestionPage";
+import StudentDashboard from "./pages/Student/StudentDashboard";
+import StudentExamsPage from "./pages/Student/StudentExamsPage";
+import StudentCourseCard from "./components/StudentCourseCard";
+import StudentCoursesPage from "./pages/Student/StudentCoursePage";
+import ExamRulesPage from "./pages/Student/ExamRulesPage";
+import ExamPage from "./pages/Student/ExamPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -53,6 +64,94 @@ function App() {
           element={
             <ProtectedRoute>
               <AllUsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/teacher/dashboard"
+          element={
+            <ProtectedRoute>
+              <TeacherDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teacher/courses"
+          element={
+            <ProtectedRoute>
+              <Course />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/teacher/subjects"
+          element={
+            <ProtectedRoute>
+              <Subjects />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/teacher/exams"
+          element={
+            <ProtectedRoute>
+              <Exams />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/teacher/exams/:examId/add-question"
+          element={
+            <ProtectedRoute>
+              <AddQuestionPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/dashboard"
+          element={
+            <ProtectedRoute>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/exams"
+          element={
+            <ProtectedRoute>
+              <StudentExamsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/courses"
+          element={
+            <ProtectedRoute>
+              <StudentCoursesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/exams/:examId"
+          element={
+            <ProtectedRoute>
+              <ExamRulesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/exam/:examId/start"
+          element={
+            <ProtectedRoute>
+              <ExamPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/exam/:examId/result"
+          element={
+            <ProtectedRoute>
+              <StudentExamsPage />
             </ProtectedRoute>
           }
         />

@@ -51,77 +51,79 @@ const registerUser = async (req, res, role_name) => {
 
 // 🟢 Student Registration
 Router.post(
-    "/register/student",
-    [
-      body("first_name", "First Name is required").not().isEmpty(),
-      body("last_name", "Last Name is required").not().isEmpty(),
-      body("email", "Email is required").isEmail(),
-      body("password", "Password must be at least 6 characters").isLength({ min: 6 }),
-      body("teacher_id", "Teacher ID is required").not().isEmpty(),
-    ],
-    async (req, res) => {
-      try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(400).json({ errors: errors.array() });
-        }
-  
-        const { first_name, last_name, email, password, teacher_id } = req.body;
-  
-        // Check if student already exists
-        let student = await User.findOne({ email });
-        if (student) {
-          return res.status(400).json({ message: "Student already exists" });
-        }
-  
-        // Check if the teacher exists
-        const teacher = await User.findById(teacher_id);
-        if (!teacher || teacher.role_id.toString() !== (await Role.findOne({ name: "teacher" }))._id.toString()) {
-          return res.status(400).json({ message: "Invalid teacher ID" });
-        }
-  
-        // Find the student role
-        const role = await Role.findOne({ name: "student" });
-        if (!role) {
-          return res.status(400).json({ message: "Student role not found" });
-        }
-  
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-  
-        // Create the student
-        student = new User({
-          first_name,
-          last_name,
-          email,
-          password: hashedPassword,
-          role_id: role._id,
-          teacher_id: teacher._id, // Link the student to the teacher
-          status: "approved", // Students are approved automatically
-        });
-  
-        // Save the student
-        await student.save();
-  
-        return res.status(201).json({
-          message: "Student registered successfully",
-          student: {
-            first_name: student.first_name,
-            last_name: student.last_name,
-            email: student.email,
-            role: "student",
-            teacher_id: student.teacher_id,
-            status: student.status,
-          },
-        });
-      } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Server error" });
-      }
+  "/register/student",
+  [
+    body("first_name", "First Name is required").not().isEmpty(),
+    body("last_name", "Last Name is required").not().isEmpty(),
+    body("email", "Email is required").isEmail(),
+    body("password", "Password must be at least 6 characters").isLength({ min: 6 }),
+    body("teacher_id", "Teacher ID is required").not().isEmpty(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-  );
 
-// 🟢 Teacher Registration (requires approval)
+    try {
+      const { first_name, last_name, email, password, teacher_id } = req.body;
+
+      // Check if student already exists
+      let student = await User.findOne({ email });
+      if (student) {
+        return res.status(400).json({ message: "Student already exists" });
+      }
+
+      // Find roles once
+      const [teacherRole, studentRole] = await Promise.all([
+        Role.findOne({ role_name: "teacher" }),
+        Role.findOne({ role_name: "student" })
+      ]);
+
+      if (!teacherRole || !studentRole) {
+        return res.status(400).json({ message: "Roles not found" });
+      }
+
+      // Validate teacher
+      const teacher = await User.findById(teacher_id);
+      if (!teacher || teacher.role_id.toString() !== teacherRole._id.toString()) {
+        return res.status(400).json({ message: "Invalid teacher ID" });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create student
+      student = new User({
+        first_name,
+        last_name,
+        email,
+        password: hashedPassword,
+        role_id: studentRole._id,
+        teacher_id: teacher._id,
+        status: "pending"
+      });
+
+      await student.save();
+
+      return res.status(201).json({
+        message: "Student registered successfully",
+        student: {
+          id: student._id,
+          first_name: student.first_name,
+          last_name: student.last_name,
+          email: student.email,
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error registering student:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
+// GET /teachers/approved
+
 Router.post(
     "/register/teacher",
     [
